@@ -9,6 +9,7 @@ var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 
 var usersRouter = require("./routes/users");
+var committeeRouter = require("./routes/committees");
 
 var app = express();
 
@@ -24,6 +25,7 @@ app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 //Add custom routes here:
 app.use("/api/v2/users", usersRouter);
+app.use("/api/v2/committees", committeeRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

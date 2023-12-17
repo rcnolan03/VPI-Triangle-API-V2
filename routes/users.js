@@ -28,23 +28,6 @@ router.get("/public", async (req, res) => {
 });
 
 /**
- * Gets a user by id
- */
-router.get("/:id", checkAuth, async (req, res) => {
-  try {
-    const user = await userDb.getUserById(req.params.id);
-    if (user) {
-      res.json(user);
-    } else {
-      res.status(404).send("User not found");
-    }
-  } catch (error) {
-    res.status(500).send("Internal Server Error");
-  }
-});
-
-
-/**
  * Creates a new user
  */
 router.post("/create", checkAuth, async (req, res) => {
@@ -57,29 +40,39 @@ router.post("/create", checkAuth, async (req, res) => {
 });
 
 /**
- * Deletes a user by id
+ * User by id functions
  */
-router.delete("/:id", checkAuth, async (req, res) => {
-  try {
-    const userId = req.params.id;
+router
+  .route("/:id")
+  .get(checkAuth, async (req, res) => {
+    try {
+      const user = await userDb.getUserById(req.params.id);
+      if (user) {
+        res.json(user);
+      } else {
+        res.status(404).send("User not found");
+      }
+    } catch (error) {
+      res.status(500).send("Internal Server Error");
+    }
+  })
+  .put(checkAuth, async (req, res) => {
+    try {
+      const user = await userDb.updateUserById(req.body);
+      res.json(user);
+    } catch (error) {
+      res.status(500).send("Internal Server Error");
+    }
+  })
+  .delete(checkAuth, async (req, res) => {
+    try {
+      const userId = req.params.id;
 
-    await userDb.deleteUserById(userId);
-    res.status(200).send({ message: `User ${userId} deleted successfully` });
-  } catch (error) {
-    res.status(500).send("Internal Server Error");
-  }
-});
-
-/**
- * Updates a user by id
- */
-router.put("/:id", checkAuth, async (req, res) => {
-  try {
-    const user = await userDb.updateUserById(req.body);
-    res.json(user);
-  } catch (error) {
-    res.status(500).send("Internal Server Error");
-  }
-});
+      await userDb.deleteUserById(userId);
+      res.status(200).send({ message: `User ${userId} deleted successfully` });
+    } catch (error) {
+      res.status(500).send("Internal Server Error");
+    }
+  });
 
 module.exports = router;
